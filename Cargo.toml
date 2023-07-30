@@ -2,7 +2,7 @@
 name = "bp-esplora"
 version = "0.11.0"
 edition = "2018"
-authors = ["Alekos Filini <alekos.filini@gmail.com>"]
+authors = ["Alekos Filini <alekos.filini@gmail.com>", "Dr Maxim Orlovsky <orlovsky@lnp-bp.org>"]
 license = "MIT"
 homepage = "https://github.com/BP-WG/bp-esplora-client"
 repository = "https://github.com/BP-WG/bp-esplora-client"
@@ -17,7 +17,7 @@ path = "src/lib.rs"
 
 [dependencies]
 amplify = { version = "4.0.0", features = ["serde"] }
-bp-wallet = { path = "../bp-wallet", features = ["serde"] }
+bp-wallet = { git = "https://github.com/BP-WG/bp-wallet", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 log = "^0.4"
 ureq = { version = "2.5.0", features = ["json"], optional = true }
