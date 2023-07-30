@@ -2,16 +2,19 @@
 //!
 //! see: <https://github.com/Blockstream/esplora/blob/master/API.md>
 
-pub use bitcoin::consensus::{deserialize, serialize};
-pub use bitcoin::hashes::hex::FromHex;
-pub use bitcoin::{BlockHash, OutPoint, ScriptBuf, Transaction, TxIn, TxOut, Txid, Witness};
-
+use amplify::confinement::Confined;
+use amplify::hex::FromHex;
+use amplify::{confinement, Bytes32};
+use bp::{
+    BlockHash, LockTime, Outpoint, ScriptPubkey, SeqNo, SigScript, Tx as Transaction, TxIn, TxOut,
+    TxVer, Txid, Witness,
+};
 use serde::Deserialize;
 
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PrevOut {
     pub value: u64,
-    pub scriptpubkey: ScriptBuf,
+    pub scriptpubkey: ScriptPubkey,
 }
 
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -20,7 +23,7 @@ pub struct Vin {
     pub vout: u32,
     // None if coinbase
     pub prevout: Option<PrevOut>,
-    pub scriptsig: ScriptBuf,
+    pub scriptsig: SigScript,
     #[serde(deserialize_with = "deserialize_witness", default)]
     pub witness: Vec<Vec<u8>>,
     pub sequence: u32,
@@ -30,7 +33,7 @@ pub struct Vin {
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Vout {
     pub value: u64,
-    pub scriptpubkey: ScriptBuf,
+    pub scriptpubkey: ScriptPubkey,
 }
 
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -86,39 +89,28 @@ pub struct BlockSummary {
     #[serde(flatten)]
     pub time: BlockTime,
     /// Hash of the previous block, will be `None` for the genesis block.
-    pub previousblockhash: Option<bitcoin::BlockHash>,
-    pub merkle_root: bitcoin::hash_types::TxMerkleNode,
+    pub previousblockhash: Option<BlockHash>,
+    pub merkle_root: Bytes32,
 }
 
 impl Tx {
-    pub fn to_tx(&self) -> Transaction {
-        Transaction {
-            version: self.version,
-            lock_time: bitcoin::absolute::LockTime::from_consensus(self.locktime),
-            input: self
-                .vin
-                .iter()
-                .cloned()
-                .map(|vin| TxIn {
-                    previous_output: OutPoint {
-                        txid: vin.txid,
-                        vout: vin.vout,
-                    },
-                    script_sig: vin.scriptsig,
-                    sequence: bitcoin::Sequence(vin.sequence),
-                    witness: Witness::from_slice(&vin.witness),
-                })
-                .collect(),
-            output: self
-                .vout
-                .iter()
-                .cloned()
-                .map(|vout| TxOut {
-                    value: vout.value,
-                    script_pubkey: vout.scriptpubkey,
-                })
-                .collect(),
-        }
+    pub fn to_tx(&self) -> Result<Transaction, confinement::Error> {
+        let inputs = self.vin.iter().cloned().map(|vin| TxIn {
+            prev_output: Outpoint::new(vin.txid, vin.vout),
+            sig_script: vin.scriptsig,
+            sequence: SeqNo::from_consensus_u32(vin.sequence),
+            witness: Witness::from_consensus_stack(vin.witness),
+        });
+        let outputs = self.vout.iter().cloned().map(|vout| TxOut {
+            value: vout.value.into(),
+            script_pubkey: vout.scriptpubkey,
+        });
+        Ok(Transaction {
+            version: TxVer::from_consensus_i32(self.version),
+            lock_time: LockTime::from_consensus_u32(self.locktime),
+            inputs: Confined::try_from_iter(inputs)?,
+            outputs: Confined::try_from_iter(outputs)?,
+        })
     }
 
     pub fn confirmation_time(&self) -> Option<BlockTime> {
@@ -140,7 +132,7 @@ impl Tx {
             .map(|vin| {
                 vin.prevout.map(|po| TxOut {
                     script_pubkey: po.scriptpubkey,
-                    value: po.value,
+                    value: po.value.into(),
                 })
             })
             .collect()
