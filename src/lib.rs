@@ -61,8 +61,6 @@
 
 #[macro_use]
 extern crate amplify;
-#[macro_use]
-extern crate serde;
 
 use amplify::{hex, IoError};
 use bp::{BlockHash, Txid};

@@ -15,14 +15,14 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use bp::hashes::{sha256, Hash};
-use bp::{BlockHash, BlockHeader, ScriptPubkey, Tx as Transaction, Txid};
+use bp::{BlockHash, ScriptPubkey, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
 
 use reqwest::{Client, StatusCode};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, MerkleProof, OutputStatus, Tx, TxStatus};
+use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, Tx, TxStatus};
 
 #[derive(Debug, Clone)]
 pub struct AsyncClient {

@@ -12,20 +12,18 @@
 //! Esplora by way of `ureq` HTTP client.
 
 use std::collections::HashMap;
-use std::io;
-use std::io::Read;
 use std::str::FromStr;
 use std::time::Duration;
 
 use bp::hashes::{sha256, Hash};
-use bp::{BlockHash, BlockHeader, ScriptPubkey, Tx as Transaction, Txid};
+use bp::{BlockHash, ScriptPubkey, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
 
 use ureq::{Agent, Proxy, Response};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, MerkleProof, OutputStatus, Tx, TxStatus};
+use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, Tx, TxStatus, Utxo};
 
 #[derive(Debug, Clone)]
 pub struct BlockingClient {
@@ -364,7 +362,9 @@ fn is_status_not_found(status: u16) -> bool {
     status == 404
 }
 
-fn into_bytes(resp: Response) -> Result<Vec<u8>, io::Error> {
+/*
+fn into_bytes(resp: Response) -> Result<Vec<u8>, std::io::Error> {
+    use std::io::Read;
     const BYTES_LIMIT: usize = 10 * 1_024 * 1_024;
 
     let mut buf: Vec<u8> = vec![];
@@ -380,3 +380,4 @@ fn into_bytes(resp: Response) -> Result<Vec<u8>, io::Error> {
 
     Ok(buf)
 }
+*/
