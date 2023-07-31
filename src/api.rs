@@ -10,19 +10,24 @@ use bp::{
     TxVer, Txid, Witness,
 };
 use serde::Deserialize;
+use serde_with::hex::Hex;
 
+#[serde_as]
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct PrevOut {
     pub value: u64,
+    #[serde_as(as = "Hex")]
     pub scriptpubkey: ScriptPubkey,
 }
 
+#[serde_as]
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Vin {
     pub txid: Txid,
     pub vout: u32,
     // None if coinbase
     pub prevout: Option<PrevOut>,
+    #[serde_as(as = "Hex")]
     pub scriptsig: SigScript,
     #[serde(deserialize_with = "deserialize_witness", default)]
     pub witness: Vec<Vec<u8>>,
@@ -30,9 +35,11 @@ pub struct Vin {
     pub is_coinbase: bool,
 }
 
+#[serde_as]
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Vout {
     pub value: u64,
+    #[serde_as(as = "Hex")]
     pub scriptpubkey: ScriptPubkey,
 }
 
