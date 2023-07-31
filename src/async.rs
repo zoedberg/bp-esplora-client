@@ -55,7 +55,7 @@ impl AsyncClient {
 
     /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`Transaction`] option given its [`Txid`]
-    pub async fn get_tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
+    pub async fn tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
         let resp = self
             .client
             .get(&format!("{}/tx/{}/raw", self.url, txid))
@@ -70,8 +70,8 @@ impl AsyncClient {
     }
 
     /// Get a [`Transaction`] given its [`Txid`].
-    pub async fn get_tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
-        match self.get_tx(txid).await {
+    pub async fn tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
+        match self.tx(txid).await {
             Ok(Some(tx)) => Ok(tx),
             Ok(None) => Err(Error::TransactionNotFound(*txid)),
             Err(e) => Err(e),
@@ -80,7 +80,7 @@ impl AsyncClient {
      */
 
     /// Get a [`Txid`] of a transaction given its index in a block with a given hash.
-    pub async fn get_txid_at_block_index(
+    pub async fn txid_at_block_index(
         &self,
         block_hash: &BlockHash,
         index: usize,
@@ -99,7 +99,7 @@ impl AsyncClient {
     }
 
     /// Get the status of a [`Transaction`] given its [`Txid`].
-    pub async fn get_tx_status(&self, txid: &Txid) -> Result<TxStatus, Error> {
+    pub async fn tx_status(&self, txid: &Txid) -> Result<TxStatus, Error> {
         let resp = self
             .client
             .get(&format!("{}/tx/{}/status", self.url, txid))
@@ -111,7 +111,7 @@ impl AsyncClient {
 
     /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`BlockHeader`] given a particular block hash.
-    pub async fn get_header_by_hash(&self, block_hash: &BlockHash) -> Result<BlockHeader, Error> {
+    pub async fn header_by_hash(&self, block_hash: &BlockHash) -> Result<BlockHeader, Error> {
         let resp = self
             .client
             .get(&format!("{}/block/{}/header", self.url, block_hash))
@@ -125,7 +125,7 @@ impl AsyncClient {
      */
 
     /// Get the [`BlockStatus`] given a particular [`BlockHash`].
-    pub async fn get_block_status(&self, block_hash: &BlockHash) -> Result<BlockStatus, Error> {
+    pub async fn block_status(&self, block_hash: &BlockHash) -> Result<BlockStatus, Error> {
         let resp = self
             .client
             .get(&format!("{}/block/{}/status", self.url, block_hash))
@@ -137,7 +137,7 @@ impl AsyncClient {
 
     /* TODO: Uncomment once `bp-primitives` will support blocks
     /// Get a [`Block`] given a particular [`BlockHash`].
-    pub async fn get_block_by_hash(&self, block_hash: &BlockHash) -> Result<Option<Block>, Error> {
+    pub async fn block_by_hash(&self, block_hash: &BlockHash) -> Result<Option<Block>, Error> {
         let resp = self
             .client
             .get(&format!("{}/block/{}/raw", self.url, block_hash))
@@ -151,7 +151,7 @@ impl AsyncClient {
     }
 
     /// Get a merkle inclusion proof for a [`Transaction`] with the given [`Txid`].
-    pub async fn get_merkle_proof(&self, tx_hash: &Txid) -> Result<Option<MerkleProof>, Error> {
+    pub async fn merkle_proof(&self, tx_hash: &Txid) -> Result<Option<MerkleProof>, Error> {
         let resp = self
             .client
             .get(&format!("{}/tx/{}/merkle-proof", self.url, tx_hash))
@@ -166,7 +166,7 @@ impl AsyncClient {
     }
 
     /// Get a [`MerkleBlock`] inclusion proof for a [`Transaction`] with the given [`Txid`].
-    pub async fn get_merkle_block(&self, tx_hash: &Txid) -> Result<Option<MerkleBlock>, Error> {
+    pub async fn merkle_block(&self, tx_hash: &Txid) -> Result<Option<MerkleBlock>, Error> {
         let resp = self
             .client
             .get(&format!("{}/tx/{}/merkleblock-proof", self.url, tx_hash))
@@ -184,7 +184,7 @@ impl AsyncClient {
      */
 
     /// Get the spending status of an output given a [`Txid`] and the output index.
-    pub async fn get_output_status(
+    pub async fn output_status(
         &self,
         txid: &Txid,
         index: u64,
@@ -217,7 +217,7 @@ impl AsyncClient {
      */
 
     /// Get the current height of the blockchain tip
-    pub async fn get_height(&self) -> Result<u32, Error> {
+    pub async fn height(&self) -> Result<u32, Error> {
         let resp = self
             .client
             .get(&format!("{}/blocks/tip/height", self.url))
@@ -228,7 +228,7 @@ impl AsyncClient {
     }
 
     /// Get the [`BlockHash`] of the current blockchain tip.
-    pub async fn get_tip_hash(&self) -> Result<BlockHash, Error> {
+    pub async fn tip_hash(&self) -> Result<BlockHash, Error> {
         let resp = self
             .client
             .get(&format!("{}/blocks/tip/hash", self.url))
@@ -241,7 +241,7 @@ impl AsyncClient {
     }
 
     /// Get the [`BlockHash`] of a specific block height
-    pub async fn get_block_hash(&self, block_height: u32) -> Result<BlockHash, Error> {
+    pub async fn block_hash(&self, block_height: u32) -> Result<BlockHash, Error> {
         let resp = self
             .client
             .get(&format!("{}/block-height/{}", self.url, block_height))
@@ -285,7 +285,7 @@ impl AsyncClient {
 
     /// Get an map where the key is the confirmation target (in number of blocks)
     /// and the value is the estimated feerate (in sat/vB).
-    pub async fn get_fee_estimates(&self) -> Result<HashMap<String, f64>, Error> {
+    pub async fn fee_estimates(&self) -> Result<HashMap<String, f64>, Error> {
         Ok(self
             .client
             .get(&format!("{}/fee-estimates", self.url,))
@@ -300,7 +300,7 @@ impl AsyncClient {
     ///
     /// The maximum number of summaries returned depends on the backend itself: esplora returns `10`
     /// while [mempool.space](https://mempool.space/docs/api) returns `15`.
-    pub async fn get_blocks(&self, height: Option<u32>) -> Result<Vec<BlockSummary>, Error> {
+    pub async fn blocks(&self, height: Option<u32>) -> Result<Vec<BlockSummary>, Error> {
         let url = match height {
             Some(height) => format!("{}/blocks/{}", self.url, height),
             None => format!("{}/blocks", self.url),

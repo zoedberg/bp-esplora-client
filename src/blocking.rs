@@ -54,7 +54,7 @@ impl BlockingClient {
 
     /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`Transaction`] option given its [`Txid`]
-    pub fn get_tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
+    pub fn tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/raw", self.url, txid))
@@ -73,8 +73,8 @@ impl BlockingClient {
     }
 
     /// Get a [`Transaction`] given its [`Txid`].
-    pub fn get_tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
-        match self.get_tx(txid) {
+    pub fn tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
+        match self.tx(txid) {
             Ok(Some(tx)) => Ok(tx),
             Ok(None) => Err(Error::TransactionNotFound(*txid)),
             Err(e) => Err(e),
@@ -83,7 +83,7 @@ impl BlockingClient {
      */
 
     /// Get a [`Txid`] of a transaction given its index in a block with a given hash.
-    pub fn get_txid_at_block_index(
+    pub fn txid_at_block_index(
         &self,
         block_hash: &BlockHash,
         index: usize,
@@ -106,7 +106,7 @@ impl BlockingClient {
     }
 
     /// Get the status of a [`Transaction`] given its [`Txid`].
-    pub fn get_tx_status(&self, txid: &Txid) -> Result<TxStatus, Error> {
+    pub fn tx_status(&self, txid: &Txid) -> Result<TxStatus, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/status", self.url, txid))
@@ -121,7 +121,7 @@ impl BlockingClient {
 
     /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`BlockHeader`] given a particular block hash.
-    pub fn get_header_by_hash(&self, block_hash: &BlockHash) -> Result<BlockHeader, Error> {
+    pub fn header_by_hash(&self, block_hash: &BlockHash) -> Result<BlockHeader, Error> {
         let resp = self
             .agent
             .get(&format!("{}/block/{}/header", self.url, block_hash))
@@ -136,7 +136,7 @@ impl BlockingClient {
      */
 
     /// Get the [`BlockStatus`] given a particular [`BlockHash`].
-    pub fn get_block_status(&self, block_hash: &BlockHash) -> Result<BlockStatus, Error> {
+    pub fn block_status(&self, block_hash: &BlockHash) -> Result<BlockStatus, Error> {
         let resp = self
             .agent
             .get(&format!("{}/block/{}/status", self.url, block_hash))
@@ -151,7 +151,7 @@ impl BlockingClient {
 
     /* TODO: Uncomment once `bp-primitives` will support blocks
     /// Get a [`Block`] given a particular [`BlockHash`].
-    pub fn get_block_by_hash(&self, block_hash: &BlockHash) -> Result<Option<Block>, Error> {
+    pub fn block_by_hash(&self, block_hash: &BlockHash) -> Result<Option<Block>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/block/{}/raw", self.url, block_hash))
@@ -170,7 +170,7 @@ impl BlockingClient {
     }
 
     /// Get a merkle inclusion proof for a [`Transaction`] with the given [`Txid`].
-    pub fn get_merkle_proof(&self, txid: &Txid) -> Result<Option<MerkleProof>, Error> {
+    pub fn merkle_proof(&self, txid: &Txid) -> Result<Option<MerkleProof>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/merkle-proof", self.url, txid))
@@ -189,7 +189,7 @@ impl BlockingClient {
     }
 
     /// Get a [`MerkleBlock`] inclusion proof for a [`Transaction`] with the given [`Txid`].
-    pub fn get_merkle_block(&self, txid: &Txid) -> Result<Option<MerkleBlock>, Error> {
+    pub fn merkle_block(&self, txid: &Txid) -> Result<Option<MerkleBlock>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/merkleblock-proof", self.url, txid))
@@ -209,11 +209,7 @@ impl BlockingClient {
      */
 
     /// Get the spending status of an output given a [`Txid`] and the output index.
-    pub fn get_output_status(
-        &self,
-        txid: &Txid,
-        index: u64,
-    ) -> Result<Option<OutputStatus>, Error> {
+    pub fn output_status(&self, txid: &Txid, index: u64) -> Result<Option<OutputStatus>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/outspend/{}", self.url, txid, index))
@@ -248,7 +244,7 @@ impl BlockingClient {
     */
 
     /// Get the height of the current blockchain tip.
-    pub fn get_height(&self) -> Result<u32, Error> {
+    pub fn height(&self) -> Result<u32, Error> {
         let resp = self
             .agent
             .get(&format!("{}/blocks/tip/height", self.url))
@@ -262,7 +258,7 @@ impl BlockingClient {
     }
 
     /// Get the [`BlockHash`] of the current blockchain tip.
-    pub fn get_tip_hash(&self) -> Result<BlockHash, Error> {
+    pub fn tip_hash(&self) -> Result<BlockHash, Error> {
         let resp = self
             .agent
             .get(&format!("{}/blocks/tip/hash", self.url))
@@ -272,7 +268,7 @@ impl BlockingClient {
     }
 
     /// Get the [`BlockHash`] of a specific block height
-    pub fn get_block_hash(&self, block_height: u32) -> Result<BlockHash, Error> {
+    pub fn block_hash(&self, block_height: u32) -> Result<BlockHash, Error> {
         let resp = self
             .agent
             .get(&format!("{}/block-height/{}", self.url, block_height))
@@ -297,7 +293,7 @@ impl BlockingClient {
 
     /// Get an map where the key is the confirmation target (in number of blocks)
     /// and the value is the estimated feerate (in sat/vB).
-    pub fn get_fee_estimates(&self) -> Result<HashMap<String, f64>, Error> {
+    pub fn fee_estimates(&self) -> Result<HashMap<String, f64>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/fee-estimates", self.url,))
@@ -347,7 +343,7 @@ impl BlockingClient {
     ///
     /// The maximum number of summaries returned depends on the backend itself: esplora returns `10`
     /// while [mempool.space](https://mempool.space/docs/api) returns `15`.
-    pub fn get_blocks(&self, height: Option<u32>) -> Result<Vec<BlockSummary>, Error> {
+    pub fn blocks(&self, height: Option<u32>) -> Result<Vec<BlockSummary>, Error> {
         let url = match height {
             Some(height) => format!("{}/blocks/{}", self.url, height),
             None => format!("{}/blocks", self.url),
