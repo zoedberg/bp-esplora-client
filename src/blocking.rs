@@ -334,6 +334,15 @@ impl BlockingClient {
         Ok(self.agent.get(&url).call()?.into_json()?)
     }
 
+    /// Get confirmed transaction history for the specified address/scripthash,
+    /// sorted with newest first. Returns 25 transactions per page.
+    /// More can be requested by specifying the last txid seen by the previous query.
+    pub fn scripthash_utxo(&self, script: &ScriptPubkey) -> Result<Vec<Utxo>, Error> {
+        let script_hash = sha256::Hash::hash(script.as_ref());
+        let url = format!("{}/scripthash/{:x}/utxo", self.url, script_hash);
+        Ok(self.agent.get(&url).call()?.into_json()?)
+    }
+
     /// Gets some recent block summaries starting at the tip or at `height` if provided.
     ///
     /// The maximum number of summaries returned depends on the backend itself: esplora returns `10`

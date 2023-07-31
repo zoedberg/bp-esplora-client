@@ -77,6 +77,14 @@ pub struct Tx {
     pub fee: u64,
 }
 
+#[derive(Deserialize, Clone, Debug)]
+pub struct Utxo {
+    pub txid: Txid,
+    pub vout: Vec<Vout>,
+    pub value: u64,
+    pub status: TxStatus,
+}
+
 #[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct BlockTime {
     pub timestamp: u64,
