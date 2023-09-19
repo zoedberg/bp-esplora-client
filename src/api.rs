@@ -82,6 +82,8 @@ pub struct Tx {
     pub vout: Vec<Vout>,
     pub status: TxStatus,
     pub fee: u64,
+    pub size: u32,
+    pub weight: u32,
 }
 
 #[derive(Deserialize, Clone, Debug)]
