@@ -4,7 +4,7 @@
 //! async Esplora client to query Esplora's backend.
 //!
 //! The library provides the possibility to build a blocking
-//! client using [`ureq`] and an async client using [`reqwest`].
+//! client using [`minreq`] and an async client using [`reqwest`].
 //! The library supports communicating to Esplora via a proxy
 //! and also using TLS (SSL) for secure communication.
 //!
@@ -43,7 +43,15 @@
 //!
 //! `esplora_client = { version = "*", default-features = false, features = ["blocking"] }`
 //!
-//! * `blocking` enables [`ureq`], the blocking client with proxy and TLS (SSL) capabilities.
+//! * `blocking` enables [`minreq`], the blocking client with proxy.
+//! * `blocking-https` enables [`minreq`], the blocking client with proxy and TLS (SSL)
+//!   capabilities using the default [`minreq`] backend.
+//! * `blocking-https-rustls` enables [`minreq`], the blocking client with proxy and TLS (SSL)
+//!   capabilities using the `rustls` backend.
+//! * `blocking-https-native` enables [`minreq`], the blocking client with proxy and TLS (SSL)
+//!   capabilities using the platform's native TLS backend (likely OpenSSL).
+//! * `blocking-https-bundled` enables [`minreq`], the blocking client with proxy and TLS (SSL)
+//!   capabilities using a bundled OpenSSL library backend.
 //! * `async` enables [`reqwest`], the async client with proxy capabilities.
 //! * `async-https` enables [`reqwest`], the async client with support for proxying and TLS (SSL)
 //!   using the default [`reqwest`] TLS backend.
@@ -68,6 +76,7 @@ use amplify::{hex, IoError};
 use bpstd::{BlockHash, Txid};
 use std::collections::HashMap;
 use std::io;
+use std::num::TryFromIntError;
 
 pub mod api;
 
@@ -107,7 +116,7 @@ pub struct Config {
     /// The string should be formatted as: `<protocol>://<user>:<password>@host:<port>`.
     ///
     /// Note that the format of this value and the supported protocols change slightly between the
-    /// blocking version of the client (using `ureq`) and the async version (using `reqwest`). For more
+    /// blocking version of the client (using `minreq`) and the async version (using `reqwest`). For more
     /// details check with the documentation of the two crates. Both of them are compiled with
     /// the `socks` feature enabled.
     ///
@@ -134,7 +143,7 @@ pub struct Builder {
     /// The string should be formatted as: `<protocol>://<user>:<password>@host:<port>`.
     ///
     /// Note that the format of this value and the supported protocols change slightly between the
-    /// blocking version of the client (using `ureq`) and the async version (using `reqwest`). For more
+    /// blocking version of the client (using `minreq`) and the async version (using `reqwest`). For more
     /// details check with the documentation of the two crates. Both of them are compiled with
     /// the `socks` feature enabled.
     ///
@@ -192,29 +201,27 @@ impl Builder {
 #[derive(Debug, Display, Error, From)]
 #[display(inner)]
 pub enum Error {
-    /// Error during ureq HTTP request
+    /// Error during `minreq` HTTP request
     #[cfg(feature = "blocking")]
     #[from]
-    #[from(ureq::Transport)]
-    Ureq(ureq::Error),
+    Minreq(minreq::Error),
 
     /// Error during reqwest HTTP request
     #[cfg(feature = "async")]
     #[from]
     Reqwest(reqwest::Error),
 
-    /// HTTP response error {0}
+    /// HTTP response error
     #[display(doc_comments)]
-    HttpResponse(u16),
+    HttpResponse { status: u16, message: String },
 
-    /// IO error during ureq response read
+    /// Invalid status code, unable to convert to `u16`
+    StatusCode(TryFromIntError),
+
+    /// IO error during minreq response read
     #[from]
     #[from(io::Error)]
     Io(IoError),
-
-    /// no header found in ureq response
-    #[display(doc_comments)]
-    NoHeader,
 
     /// invalid server response.
     #[display(doc_comments)]

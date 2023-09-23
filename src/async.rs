@@ -79,7 +79,10 @@ impl AsyncClient {
                     if is_status_not_found(code) {
                         return Ok(None);
                     }
-                    Err(Error::HttpResponse(code.into()))
+                    Err(Error::HttpResponse {
+                        status: code.into(),
+                        message: resp.text().await?,
+                    })
                 }
             },
             Err(e) => Err(Error::Reqwest(e)),
