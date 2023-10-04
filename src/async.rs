@@ -14,8 +14,8 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use bp::hashes::{sha256, Hash};
-use bp::{BlockHash, ScriptPubkey, Txid};
+use bpstd::hashes::{sha256, Hash};
+use bpstd::{BlockHash, ScriptPubkey, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};

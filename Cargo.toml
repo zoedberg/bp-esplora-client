@@ -35,4 +35,4 @@ async-https-rustls-manual-roots = ["async", "reqwest/rustls-tls-manual-roots"]
 
 [patch.crates-io]
 bp-primitives = { git = "https://github.com/BP-WG/bp-core", branch = "primitives" }
-bp-std = { git = "https://github.com/BP-WG/bp-std" }
+bp-std = { git = "https://github.com/BP-WG/bp-std", branch = "psbt" }

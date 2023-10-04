@@ -65,7 +65,7 @@ extern crate amplify;
 extern crate serde_with;
 
 use amplify::{hex, IoError};
-use bp::{BlockHash, Txid};
+use bpstd::{BlockHash, Txid};
 use std::collections::HashMap;
 use std::io;
 
