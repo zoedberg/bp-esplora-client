@@ -1,6 +1,6 @@
 [package]
 name = "bp-esplora"
-version = "0.10.0"
+version = "0.11.0-beta.1"
 edition = "2018"
 authors = ["Alekos Filini <alekos.filini@gmail.com>", "Dr Maxim Orlovsky <orlovsky@lnp-bp.org>"]
 license = "MIT"
@@ -17,9 +17,9 @@ path = "src/lib.rs"
 
 [dependencies]
 amplify = { version = "4.5.0", features = ["serde"] }
-bp-std = { version = "0.10.0-beta.1", features = ["serde"] }
+bp-std = { version = "0.11.0-beta.1", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_with = { version = "3.3.0", features = ["hex"] }
+serde_with = { version = "3.4.0", features = ["hex"] }
 log = "^0.4"
 ureq = { version = "2.8.0", features = ["json"], optional = true }
 reqwest = { version = "0.11.22", optional = true, default-features = false, features = ["json"] }
@@ -32,3 +32,7 @@ async-https = ["async", "reqwest/default-tls"]
 async-https-native = ["async", "reqwest/native-tls"]
 async-https-rustls = ["async", "reqwest/rustls-tls"]
 async-https-rustls-manual-roots = ["async", "reqwest/rustls-tls-manual-roots"]
+
+[patch.crates-io]
+bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "v0.11" }
+bp-std = { git = "https://github.com/BP-WG/bp-std", branch = "master" }
