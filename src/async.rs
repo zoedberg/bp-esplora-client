@@ -14,13 +14,13 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
-use bpstd::hashes::{sha256, Hash};
 use bpstd::{BlockHash, ScriptPubkey, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
 
 use reqwest::{Client, StatusCode};
+use sha2::{Digest, Sha256};
 
 use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, Tx, TxStatus};
 
@@ -265,7 +265,9 @@ impl AsyncClient {
         script: &ScriptPubkey,
         last_seen: Option<Txid>,
     ) -> Result<Vec<Tx>, Error> {
-        let script_hash = sha256::Hash::hash(script.as_ref());
+        let mut hasher = Sha256::default();
+        hasher.update(script);
+        let script_hash = hasher.finalize();
         let url = match last_seen {
             Some(last_seen) => format!(
                 "{}/scripthash/{:x}/txs/chain/{}",

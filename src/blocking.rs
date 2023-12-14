@@ -15,11 +15,11 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use std::time::Duration;
 
-use bpstd::hashes::{sha256, Hash};
 use bpstd::{BlockHash, ScriptPubkey, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
+use sha2::{Digest, Sha256};
 
 use ureq::{Agent, Proxy, Response};
 
@@ -319,7 +319,9 @@ impl BlockingClient {
         script: &ScriptPubkey,
         last_seen: Option<Txid>,
     ) -> Result<Vec<Tx>, Error> {
-        let script_hash = sha256::Hash::hash(script.as_ref());
+        let mut hasher = Sha256::default();
+        hasher.update(script);
+        let script_hash = hasher.finalize();
         let url = match last_seen {
             Some(last_seen) => format!(
                 "{}/scripthash/{:x}/txs/chain/{}",
@@ -334,7 +336,9 @@ impl BlockingClient {
     /// sorted with newest first. Returns 25 transactions per page.
     /// More can be requested by specifying the last txid seen by the previous query.
     pub fn scripthash_utxo(&self, script: &ScriptPubkey) -> Result<Vec<Utxo>, Error> {
-        let script_hash = sha256::Hash::hash(script.as_ref());
+        let mut hasher = Sha256::default();
+        hasher.update(script);
+        let script_hash = hasher.finalize();
         let url = format!("{}/scripthash/{:x}/utxo", self.url, script_hash);
         Ok(self.agent.get(&url).call()?.into_json()?)
     }
