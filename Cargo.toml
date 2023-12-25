@@ -19,6 +19,7 @@ path = "src/lib.rs"
 amplify = { version = "4.5.0", features = ["serde"] }
 sha2 = "0.10.8"
 bp-std = { version = "0.11.0-beta.2", features = ["serde"] }
+rgb-std = { version = "0.11.0-beta.2", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.4.0", features = ["hex"] }
 log = "^0.4"
@@ -27,6 +28,8 @@ reqwest = { version = "0.11.23", optional = true, default-features = false, feat
 
 [features]
 default = ["blocking", "async", "async-https"]
+all = ["blocking", "rgb"]
+rgb = ["rgb-std"]
 blocking = ["ureq", "ureq/socks-proxy"]
 async = ["reqwest", "reqwest/socks"]
 async-https = ["async", "reqwest/default-tls"]
@@ -37,8 +40,14 @@ async-https-rustls-manual-roots = ["async", "reqwest/rustls-tls-manual-roots"]
 [patch.crates-io]
 commit_verify = { git = "https://github.com/LNP-BP/client_side_validation", branch = "v0.11" }
 bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "doubleanchors" }
+bp-dbc = { git = "https://github.com/BP-WG/bp-core", branch = "doubleanchors" }
+bp-seals = { git = "https://github.com/BP-WG/bp-core", branch = "doubleanchors" }
+bp-core = { git = "https://github.com/BP-WG/bp-core", branch = "doubleanchors" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 bp-std = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 bp-derive = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 descriptors = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 psbt = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
+aluvm = { git = "https://github.com/AluVM/rust-aluvm", branch = "v0.11" }
+rgb-core = { git = "https://github.com/RGB-WG/rgb-core", branch = "canary" }
+rgb-std = { git = "https://github.com/RGB-WG/rgb-std", branch = "v0.11" }

@@ -12,10 +12,12 @@
 //! Esplora by way of `ureq` HTTP client.
 
 use std::collections::HashMap;
+use std::io;
+use std::io::Cursor;
 use std::str::FromStr;
 use std::time::Duration;
 
-use bpstd::{BlockHash, ScriptPubkey, Txid};
+use bpstd::{BlockHash, ConsensusDecode, ScriptPubkey, Tx, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
@@ -23,7 +25,7 @@ use sha2::{Digest, Sha256};
 
 use ureq::{Agent, Proxy, Response};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, Tx, TxStatus, Utxo};
+use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, TxStatus, Utxo};
 
 #[derive(Debug, Clone)]
 pub struct BlockingClient {
@@ -52,16 +54,20 @@ impl BlockingClient {
         BlockingClient { url, agent }
     }
 
-    /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`Transaction`] option given its [`Txid`]
-    pub fn tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
+    pub fn tx(&self, txid: &Txid) -> Result<Option<Tx>, Error> {
         let resp = self
             .agent
             .get(&format!("{}/tx/{}/raw", self.url, txid))
             .call();
 
         match resp {
-            Ok(resp) => Ok(Some(deserialize(&into_bytes(resp)?)?)),
+            Ok(resp) => {
+                let bytes = into_bytes(resp)?;
+                let tx = Tx::consensus_decode(&mut Cursor::new(bytes))
+                    .map_err(|_| Error::InvalidServerData)?;
+                Ok(Some(tx))
+            }
             Err(ureq::Error::Status(code, _)) => {
                 if is_status_not_found(code) {
                     return Ok(None);
@@ -73,14 +79,13 @@ impl BlockingClient {
     }
 
     /// Get a [`Transaction`] given its [`Txid`].
-    pub fn tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
+    pub fn tx_no_opt(&self, txid: &Txid) -> Result<Tx, Error> {
         match self.tx(txid) {
             Ok(Some(tx)) => Ok(tx),
             Ok(None) => Err(Error::TransactionNotFound(*txid)),
             Err(e) => Err(e),
         }
     }
-     */
 
     /// Get a [`Txid`] of a transaction given its index in a block with a given hash.
     pub fn txid_at_block_index(
@@ -371,7 +376,6 @@ fn is_status_not_found(status: u16) -> bool {
     status == 404
 }
 
-/*
 fn into_bytes(resp: Response) -> Result<Vec<u8>, std::io::Error> {
     use std::io::Read;
     const BYTES_LIMIT: usize = 10 * 1_024 * 1_024;
@@ -389,4 +393,3 @@ fn into_bytes(resp: Response) -> Result<Vec<u8>, std::io::Error> {
 
     Ok(buf)
 }
-*/

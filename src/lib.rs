@@ -75,6 +75,8 @@ pub mod api;
 pub mod r#async;
 #[cfg(feature = "blocking")]
 pub mod blocking;
+#[cfg(feature = "rgb")]
+pub mod rgb;
 
 pub use api::*;
 #[cfg(feature = "blocking")]
@@ -180,6 +182,10 @@ pub enum Error {
     /// no header found in ureq response
     #[display(doc_comments)]
     NoHeader,
+
+    /// invalid server response.
+    #[display(doc_comments)]
+    InvalidServerData,
 
     /// Invalid number returned
     #[from]
