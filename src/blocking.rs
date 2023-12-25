@@ -232,13 +232,12 @@ impl BlockingClient {
         }
     }
 
-    /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Broadcast a [`Transaction`] to Esplora
-    pub fn broadcast(&self, transaction: &Transaction) -> Result<(), Error> {
+    pub fn broadcast(&self, tx: &Tx) -> Result<(), Error> {
         let resp = self
             .agent
             .post(&format!("{}/tx", self.url))
-            .send_string(&serialize(transaction).to_lower_hex_string());
+            .send_string(&format!("{tx:x}"));
 
         match resp {
             Ok(_) => Ok(()), // We do not return the txid?
@@ -246,7 +245,6 @@ impl BlockingClient {
             Err(e) => Err(Error::Ureq(e)),
         }
     }
-    */
 
     /// Get the height of the current blockchain tip.
     pub fn height(&self) -> Result<u32, Error> {
@@ -323,7 +321,7 @@ impl BlockingClient {
         &self,
         script: &ScriptPubkey,
         last_seen: Option<Txid>,
-    ) -> Result<Vec<Tx>, Error> {
+    ) -> Result<Vec<crate::Tx>, Error> {
         let mut hasher = Sha256::default();
         hasher.update(script);
         let script_hash = hasher.finalize();
