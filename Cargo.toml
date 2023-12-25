@@ -18,12 +18,12 @@ path = "src/lib.rs"
 [dependencies]
 amplify = { version = "4.5.0", features = ["serde"] }
 sha2 = "0.10.8"
-bp-std = { version = "0.11.0-beta.1", features = ["serde"] }
+bp-std = { version = "0.11.0-beta.2", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_with = { version = "3.4.0", features = ["hex"] }
 log = "^0.4"
-ureq = { version = "2.8.0", features = ["json"], optional = true }
-reqwest = { version = "0.11.22", optional = true, default-features = false, features = ["json"] }
+ureq = { version = "2.9.1", features = ["json"], optional = true }
+reqwest = { version = "0.11.23", optional = true, default-features = false, features = ["json"] }
 
 [features]
 default = ["blocking", "async", "async-https"]
@@ -35,5 +35,10 @@ async-https-rustls = ["async", "reqwest/rustls-tls"]
 async-https-rustls-manual-roots = ["async", "reqwest/rustls-tls-manual-roots"]
 
 [patch.crates-io]
+commit_verify = { git = "https://github.com/LNP-BP/client_side_validation", branch = "v0.11" }
+bp-consensus = { git = "https://github.com/BP-WG/bp-core", branch = "doubleanchors" }
 bp-invoice = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
 bp-std = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
+bp-derive = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
+descriptors = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
+psbt = { git = "https://github.com/BP-WG/bp-std", branch = "v0.11" }
