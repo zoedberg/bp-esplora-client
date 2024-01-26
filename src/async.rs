@@ -10,19 +10,20 @@
 // licenses.
 
 //! Esplora by way of `reqwest` HTTP client.
-
-use std::collections::HashMap;
+use std::io;
+use std::io::Cursor;
 use std::str::FromStr;
+use std::{collections::HashMap, io::Read};
 
-use bpstd::{BlockHash, ScriptPubkey, Txid};
+use bpstd::{BlockHash, ConsensusDecode, ScriptPubkey, Tx, Txid};
 
 #[allow(unused_imports)]
 use log::{debug, error, info, trace};
 
-use reqwest::{Client, StatusCode};
+use reqwest::{Client, Response, StatusCode};
 use sha2::{Digest, Sha256};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, Tx, TxStatus};
+use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, TxStatus};
 
 #[derive(Debug, Clone)]
 pub struct AsyncClient {
@@ -53,31 +54,41 @@ impl AsyncClient {
         AsyncClient { url, client }
     }
 
-    /* Uncomment once `bp-primitives` will support consensus serialziation
     /// Get a [`Transaction`] option given its [`Txid`]
-    pub async fn tx(&self, txid: &Txid) -> Result<Option<Transaction>, Error> {
+    pub async fn tx(&self, txid: &Txid) -> Result<Option<Tx>, Error> {
         let resp = self
             .client
             .get(&format!("{}/tx/{}/raw", self.url, txid))
             .send()
-            .await?;
+            .await;
 
-        if let StatusCode::NOT_FOUND = resp.status() {
-            return Ok(None);
+        match resp {
+            Ok(resp) => match resp.status() {
+                StatusCode::OK => {
+                    let bytes = into_bytes(resp).await?;
+                    let tx = Tx::consensus_decode(&mut Cursor::new(bytes))
+                        .map_err(|_| Error::InvalidServerData)?;
+                    Ok(Some(tx))
+                }
+                code => {
+                    if is_status_not_found(code) {
+                        return Ok(None);
+                    }
+                    Err(Error::HttpResponse(code.into()))
+                }
+            },
+            Err(e) => Err(Error::Reqwest(e)),
         }
-
-        Ok(Some(deserialize(&resp.error_for_status()?.bytes().await?)?))
     }
 
     /// Get a [`Transaction`] given its [`Txid`].
-    pub async fn tx_no_opt(&self, txid: &Txid) -> Result<Transaction, Error> {
+    pub async fn tx_no_opt(&self, txid: &Txid) -> Result<Tx, Error> {
         match self.tx(txid).await {
             Ok(Some(tx)) => Ok(tx),
             Ok(None) => Err(Error::TransactionNotFound(*txid)),
             Err(e) => Err(e),
         }
     }
-     */
 
     /// Get a [`Txid`] of a transaction given its index in a block with a given hash.
     pub async fn txid_at_block_index(
@@ -264,7 +275,7 @@ impl AsyncClient {
         &self,
         script: &ScriptPubkey,
         last_seen: Option<Txid>,
-    ) -> Result<Vec<Tx>, Error> {
+    ) -> Result<Vec<crate::Tx>, Error> {
         let mut hasher = Sha256::default();
         hasher.update(script);
         let script_hash = hasher.finalize();
@@ -281,7 +292,7 @@ impl AsyncClient {
             .send()
             .await?
             .error_for_status()?
-            .json::<Vec<Tx>>()
+            .json::<Vec<crate::Tx>>()
             .await?)
     }
 
@@ -327,4 +338,27 @@ impl AsyncClient {
     pub fn client(&self) -> &Client {
         &self.client
     }
+}
+
+fn is_status_not_found(status: StatusCode) -> bool {
+    status == 404
+}
+
+async fn into_bytes(resp: Response) -> Result<Vec<u8>, std::io::Error> {
+    const BYTES_LIMIT: usize = 10 * 1_024 * 1_024;
+    let mut buf: Vec<u8> = vec![];
+
+    resp.bytes()
+        .await
+        .expect("invalid bytes data")
+        .take((BYTES_LIMIT + 1) as u64)
+        .read_to_end(&mut buf)?;
+    if buf.len() > BYTES_LIMIT {
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            "response too big for into_bytes",
+        ));
+    }
+
+    Ok(buf)
 }
