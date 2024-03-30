@@ -213,19 +213,18 @@ impl AsyncClient {
         Ok(Some(resp.error_for_status()?.json().await?))
     }
 
-    /* Uncomment once `bp-primitives` will support consensus serialziation
-    /// Broadcast a [`Transaction`] to Esplora
-    pub async fn broadcast(&self, transaction: &Transaction) -> Result<(), Error> {
-        self.client
+    pub async fn broadcast(&self, tx: &Tx) -> Result<(), Error> {
+        self
+            .client
             .post(&format!("{}/tx", self.url))
-            .body(serialize(transaction).to_lower_hex_string())
+            .body(format!("{tx:x}").to_string())
             .send()
             .await?
-            .error_for_status()?;
+            ;
 
         Ok(())
     }
-     */
+
 
     /// Get the current height of the blockchain tip
     pub async fn height(&self) -> Result<u32, Error> {
