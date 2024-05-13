@@ -101,6 +101,32 @@ pub fn convert_fee_rate(target: usize, estimates: HashMap<String, f64>) -> Resul
 }
 
 #[derive(Debug, Clone)]
+pub struct Config {
+    /// Optional URL of the proxy to use to make requests to the Esplora server
+    ///
+    /// The string should be formatted as: `<protocol>://<user>:<password>@host:<port>`.
+    ///
+    /// Note that the format of this value and the supported protocols change slightly between the
+    /// blocking version of the client (using `ureq`) and the async version (using `reqwest`). For more
+    /// details check with the documentation of the two crates. Both of them are compiled with
+    /// the `socks` feature enabled.
+    ///
+    /// The proxy is ignored when targeting `wasm32`.
+    pub proxy: Option<String>,
+    /// Socket timeout.
+    pub timeout: Option<u64>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            proxy: None,
+            timeout: Some(30),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Builder {
     pub base_url: String,
     /// Optional URL of the proxy to use to make requests to the Esplora server
@@ -125,6 +151,15 @@ impl Builder {
             base_url: base_url.to_string(),
             proxy: None,
             timeout: None,
+        }
+    }
+
+    /// Instantiate a builder from a URL and a config
+    pub fn from_config(base_url: &str, config: Config) -> Self {
+        Builder {
+            base_url: base_url.to_string(),
+            proxy: config.proxy,
+            timeout: config.timeout,
         }
     }
 

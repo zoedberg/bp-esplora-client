@@ -23,7 +23,7 @@ use log::{debug, error, info, trace};
 use reqwest::{Client, Response, StatusCode};
 use sha2::{Digest, Sha256};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, TxStatus};
+use crate::{BlockStatus, BlockSummary, Builder, Config, Error, OutputStatus, TxStatus};
 
 #[derive(Debug, Clone)]
 pub struct AsyncClient {
@@ -32,7 +32,7 @@ pub struct AsyncClient {
 }
 
 impl AsyncClient {
-    /// build an async client from a builder
+    /// build an async client from a [`Builder`]
     pub fn from_builder(builder: Builder) -> Result<Self, Error> {
         let mut client_builder = Client::builder();
 
@@ -47,6 +47,11 @@ impl AsyncClient {
         }
 
         Ok(Self::from_client(builder.base_url, client_builder.build()?))
+    }
+
+    /// build an async client from a [`Config`]
+    pub fn from_config(base_url: &str, config: Config) -> Result<Self, Error> {
+        Self::from_builder(Builder::from_config(base_url, config))
     }
 
     /// build an async client from the base url and [`Client`]

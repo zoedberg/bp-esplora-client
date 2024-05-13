@@ -25,7 +25,7 @@ use sha2::{Digest, Sha256};
 
 use ureq::{Agent, Proxy, Response};
 
-use crate::{BlockStatus, BlockSummary, Builder, Error, OutputStatus, TxStatus, Utxo};
+use crate::{BlockStatus, BlockSummary, Builder, Config, Error, OutputStatus, TxStatus, Utxo};
 
 #[derive(Debug, Clone)]
 pub struct BlockingClient {
@@ -47,6 +47,11 @@ impl BlockingClient {
         }
 
         Ok(Self::from_agent(builder.base_url, agent_builder.build()))
+    }
+
+    /// build a blocking client from a [`Config`]
+    pub fn from_config(base_url: &str, config: Config) -> Result<Self, Error> {
+        Self::from_builder(Builder::from_config(base_url, config))
     }
 
     /// build a blocking client from an [`Agent`]
