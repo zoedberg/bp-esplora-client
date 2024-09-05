@@ -163,9 +163,9 @@ dependencies = [
 
 [[package]]
 name = "bp-consensus"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d23ea438647522d1f1a8fc8fa1420cc56321433d5d5964636294991f18f9e0c9"
+checksum = "ae3a99a46063d23d20a3177a04923652b245f31c2a04a6d0c47d5a93dc201a80"
 dependencies = [
  "amplify",
  "chrono",
@@ -177,9 +177,9 @@ dependencies = [
 
 [[package]]
 name = "bp-derive"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5a1a38a6324920d6aa183245be6f13acde5aef1008b24fecf5f8e4036f33fe8"
+checksum = "1d2687829a365ba79a22d91737fa7404fd3e2aaeee6b8f5780fa3e94e6cb36c2"
 dependencies = [
  "amplify",
  "bp-consensus",
@@ -193,7 +193,7 @@ dependencies = [
 
 [[package]]
 name = "bp-esplora"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 dependencies = [
  "amplify",
  "bp-std",
@@ -207,9 +207,9 @@ dependencies = [
 
 [[package]]
 name = "bp-invoice"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddcb55fe081418fc6e508370eaf8431001274727862e57e6672b6c892b8d3d66"
+checksum = "f29c4f672b4b82ce7a218b2900254ac8e4b15b0022ed13abffa722571e73d375"
 dependencies = [
  "amplify",
  "bech32",
@@ -220,9 +220,9 @@ dependencies = [
 
 [[package]]
 name = "bp-std"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac66f7e326e203f228fd60f1fb1f5629f6ec20f37c61b580a627c3194e85d7fc"
+checksum = "c3c9642f7b303791ba5696ff4be52c8d21ac2d2265bf9552692c8b03c741c11c"
 dependencies = [
  "amplify",
  "bp-consensus",
@@ -299,9 +299,9 @@ dependencies = [
 
 [[package]]
 name = "commit_verify"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "538b69bbb2f7259c1d07334fa8adae0006c8b559efbdb6daafacb6df249b897b"
+checksum = "82a1982dc6c54d2dcfa2bf4398d97e4e80a93f24d2537e58d6110b2b272cff0c"
 dependencies = [
  "amplify",
  "commit_encoding_derive",
@@ -409,9 +409,9 @@ dependencies = [
 
 [[package]]
 name = "descriptors"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88b6883b7b23aedc5a2ff149a54b0f57496935be3fd4b453f0c76361b08f5649"
+checksum = "9e15b0f1ea4c1b7f66b86153341f08961122f5bad3fa68546b9ac5b199c99c39"
 dependencies = [
  "amplify",
  "bp-derive",
@@ -1028,9 +1028,9 @@ dependencies = [
 
 [[package]]
 name = "psbt"
-version = "0.11.0-beta.7"
+version = "0.11.0-beta.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2afd0eef00260666da5c2c72e61c23bd2e07076e0791ea4cc3e79ab408246a17"
+checksum = "8b5b2f8fb596a1caffa486595c66eae3ebc3fb05c74063348b9a987373ba0cdb"
 dependencies = [
  "amplify",
  "base64",
@@ -1468,9 +1468,9 @@ checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 
 [[package]]
 name = "strict_encoding"
-version = "2.7.0-rc.1"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "662b8c3ff360ff33370e6875dd5bdcbf3cecc992241f30e5f7071227ef693451"
+checksum = "d69b4893cf054e129d5288a565102124520d7b94eb9589d1e78202abc7e2092d"
 dependencies = [
  "amplify",
  "half",
@@ -1480,9 +1480,9 @@ dependencies = [
 
 [[package]]
 name = "strict_encoding_derive"
-version = "2.7.0-rc.1"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ad171ee0ac09497f5f87d90bb36acc21992fb58f3565ad8c2663160c07c306d"
+checksum = "0d4f9b678862372f8e439bcaafc27df7610ea93b06d2deb6244dec0af4259ce6"
 dependencies = [
  "amplify_syn",
  "heck",
@@ -1493,9 +1493,9 @@ dependencies = [
 
 [[package]]
 name = "strict_types"
-version = "2.7.0-rc.1"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6e182f593e9c4f02ccfcea7929bef866cff12a3f8e213338ce48a706bb263c1"
+checksum = "5f16e8855a575633815f01482ac927ebaca3d2485aec8e17226c6826de29154e"
 dependencies = [
  "amplify",
  "baid64",
