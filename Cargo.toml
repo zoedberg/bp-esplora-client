@@ -29,6 +29,7 @@ reqwest = { version = "0.12.5", optional = true, default-features = false, featu
 default = ["blocking", "async", "async-https"]
 all = ["blocking"]
 blocking = ["ureq", "ureq/socks-proxy"]
+blocking-wasm = ["ureq"]
 async = ["reqwest", "reqwest/socks"]
 async-https = ["async", "reqwest/default-tls"]
 async-https-native = ["async", "reqwest/native-tls"]

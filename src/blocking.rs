@@ -23,7 +23,9 @@ use bpstd::{BlockHash, ConsensusDecode, ScriptPubkey, Tx, Txid};
 use log::{debug, error, info, trace};
 use sha2::{Digest, Sha256};
 
-use ureq::{Agent, Proxy, Response};
+#[cfg(not(target_arch = "wasm32"))]
+use ureq::Proxy;
+use ureq::{Agent, Response};
 
 use crate::{BlockStatus, BlockSummary, Builder, Config, Error, OutputStatus, TxStatus, Utxo};
 
@@ -42,6 +44,7 @@ impl BlockingClient {
             agent_builder = agent_builder.timeout(Duration::from_secs(timeout));
         }
 
+        #[cfg(not(target_arch = "wasm32"))]
         if let Some(proxy) = &builder.proxy {
             agent_builder = agent_builder.proxy(Proxy::new(proxy)?);
         }
