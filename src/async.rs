@@ -63,7 +63,7 @@ impl AsyncClient {
     pub async fn tx(&self, txid: &Txid) -> Result<Option<Tx>, Error> {
         let resp = self
             .client
-            .get(&format!("{}/tx/{}/raw", self.url, txid))
+            .get(format!("{}/tx/{}/raw", self.url, txid))
             .send()
             .await;
 
@@ -103,7 +103,7 @@ impl AsyncClient {
     ) -> Result<Option<Txid>, Error> {
         let resp = self
             .client
-            .get(&format!("{}/block/{}/txid/{}", self.url, block_hash, index))
+            .get(format!("{}/block/{}/txid/{}", self.url, block_hash, index))
             .send()
             .await?;
 
@@ -118,7 +118,7 @@ impl AsyncClient {
     pub async fn tx_status(&self, txid: &Txid) -> Result<TxStatus, Error> {
         let resp = self
             .client
-            .get(&format!("{}/tx/{}/status", self.url, txid))
+            .get(format!("{}/tx/{}/status", self.url, txid))
             .send()
             .await?;
 
@@ -144,7 +144,7 @@ impl AsyncClient {
     pub async fn block_status(&self, block_hash: &BlockHash) -> Result<BlockStatus, Error> {
         let resp = self
             .client
-            .get(&format!("{}/block/{}/status", self.url, block_hash))
+            .get(format!("{}/block/{}/status", self.url, block_hash))
             .send()
             .await?;
 
@@ -207,7 +207,7 @@ impl AsyncClient {
     ) -> Result<Option<OutputStatus>, Error> {
         let resp = self
             .client
-            .get(&format!("{}/tx/{}/outspend/{}", self.url, txid, index))
+            .get(format!("{}/tx/{}/outspend/{}", self.url, txid, index))
             .send()
             .await?;
 
@@ -219,23 +219,20 @@ impl AsyncClient {
     }
 
     pub async fn broadcast(&self, tx: &Tx) -> Result<(), Error> {
-        self
-            .client
-            .post(&format!("{}/tx", self.url))
+        self.client
+            .post(format!("{}/tx", self.url))
             .body(format!("{tx:x}").to_string())
             .send()
-            .await?
-            ;
+            .await?;
 
         Ok(())
     }
-
 
     /// Get the current height of the blockchain tip
     pub async fn height(&self) -> Result<u32, Error> {
         let resp = self
             .client
-            .get(&format!("{}/blocks/tip/height", self.url))
+            .get(format!("{}/blocks/tip/height", self.url))
             .send()
             .await?;
 
@@ -246,7 +243,7 @@ impl AsyncClient {
     pub async fn tip_hash(&self) -> Result<BlockHash, Error> {
         let resp = self
             .client
-            .get(&format!("{}/blocks/tip/hash", self.url))
+            .get(format!("{}/blocks/tip/hash", self.url))
             .send()
             .await?;
 
@@ -259,7 +256,7 @@ impl AsyncClient {
     pub async fn block_hash(&self, block_height: u32) -> Result<BlockHash, Error> {
         let resp = self
             .client
-            .get(&format!("{}/block-height/{}", self.url, block_height))
+            .get(format!("{}/block-height/{}", self.url, block_height))
             .send()
             .await?;
 
@@ -305,7 +302,7 @@ impl AsyncClient {
     pub async fn fee_estimates(&self) -> Result<HashMap<String, f64>, Error> {
         Ok(self
             .client
-            .get(&format!("{}/fee-estimates", self.url,))
+            .get(format!("{}/fee-estimates", self.url,))
             .send()
             .await?
             .error_for_status()?
