@@ -1,6 +1,6 @@
-//! structs from the esplora API
+//! Structs from the Esplora API
 //!
-//! see: <https://github.com/Blockstream/esplora/blob/master/API.md>
+//! See: <https://github.com/Blockstream/esplora/blob/master/API.md>
 
 use amplify::confinement::Confined;
 use amplify::hex::FromHex;
@@ -73,17 +73,19 @@ pub struct BlockStatus {
     pub next_best: Option<BlockHash>,
 }
 
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Tx {
     pub txid: Txid,
     pub version: i32,
     pub locktime: u32,
     pub vin: Vec<Vin>,
     pub vout: Vec<Vout>,
+    /// Transaction size in raw bytes (NOT virtual bytes).
+    pub size: u32,
+    /// Transaction weight units.
+    pub weight: u32,
     pub status: TxStatus,
     pub fee: u64,
-    pub size: u32,
-    pub weight: u32,
 }
 
 #[derive(Deserialize, Clone, Debug)]
@@ -108,6 +110,32 @@ pub struct BlockSummary {
     /// Hash of the previous block, will be `None` for the genesis block.
     pub previousblockhash: Option<BlockHash>,
     pub merkle_root: Bytes32,
+}
+
+/// Address statistics, includes the address, and the utxo information for the address.
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+pub struct AddressStats {
+    /// The address.
+    pub address: String,
+    /// The summary of transactions for this address, already on chain.
+    pub chain_stats: AddressTxsSummary,
+    /// The summary of transactions for this address, currently in the mempool.
+    pub mempool_stats: AddressTxsSummary,
+}
+
+/// Contains a summary of the transactions for an address.
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Deserialize)]
+pub struct AddressTxsSummary {
+    /// The number of funded transaction outputs.
+    pub funded_txo_count: u32,
+    /// The sum of the funded transaction outputs, in satoshis.
+    pub funded_txo_sum: u64,
+    /// The number of spent transaction outputs.
+    pub spent_txo_count: u32,
+    /// The sum of the spent transaction outputs, in satoshis.
+    pub spent_txo_sum: u64,
+    /// The total number of transactions.
+    pub tx_count: u32,
 }
 
 impl Tx {
