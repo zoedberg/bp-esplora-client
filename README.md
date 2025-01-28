@@ -7,9 +7,9 @@ Bitcoin Esplora API client library not using rust-bitcoin. Supports plaintext, T
     <a href="https://github.com/BP-WG/bp-esplora-client/blob/master/LICENSE"><img alt="MIT Licensed" src="https://img.shields.io/badge/license-MIT-blue.svg"/></a>
     <a href='https://coveralls.io/github/BP-WG/bp-esplora-client?branch=master'><img src='https://coveralls.io/repos/github/BP-WG/bp-esplora-client/badge.svg?branch=master' alt='Coverage Status' /></a>
     <a href="https://docs.rs/bp-esplora"><img alt="API Docs" src="https://img.shields.io/badge/docs.rs-bp--esplora-green"/></a>
-    <a href="https://blog.rust-lang.org/2024/03/21/Rust-1.77.0.html"><img alt="Rustc Version 1.77.0+" src="https://img.shields.io/badge/rustc-1.77.0%2B-lightgrey.svg"/></a>
+    <a href="https://blog.rust-lang.org/2024/03/21/Rust-1.82.0.html"><img alt="Rustc Version 1.82.0+" src="https://img.shields.io/badge/rustc-1.82.0%2B-lightgrey.svg"/></a>
 </p>
 
 ## Minimum Supported Rust Version (MSRV)
 
-This library should compile with any combination of features with Rust 1.77.0.
+This library should compile with any combination of features with Rust 1.82.0.
