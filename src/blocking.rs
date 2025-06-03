@@ -381,13 +381,22 @@ impl BlockingClient {
         let mut attempts = 0;
 
         loop {
-            match self.get_request(url)?.send()? {
-                resp if attempts < self.max_retries && is_status_retryable(resp.status_code) => {
-                    thread::sleep(delay);
-                    attempts += 1;
-                    delay *= 2;
+            let resp = self.get_request(url)?.send();
+
+            let should_retry = match &resp {
+                Ok(resp) => is_status_retryable(resp.status_code),
+                Err(err) => {
+                    matches!(err, minreq::Error::IoError(_))
                 }
-                resp => return Ok(resp),
+            ,
+            };
+
+            if should_retry && attempts < self.max_retries {
+                thread::sleep(delay);
+                attempts += 1;
+                delay *= 2;
+            } else {
+                return resp.map_err(|e| e.into());
             }
         }
     }
